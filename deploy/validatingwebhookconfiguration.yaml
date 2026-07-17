@@ -1,0 +1,27 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: k8s-policy-webhook
+  annotations:
+    # cert-manager injects caBundle here automatically.
+    cert-manager.io/inject-ca-from: policy-system/k8s-policy-webhook-tls
+webhooks:
+  - name: validate.pods.k8s-policy-webhook.jnnishad.dev
+    admissionReviewVersions: ["v1"]
+    sideEffects: None
+    failurePolicy: Ignore # start in Ignore; flip to Fail once confident
+    clientConfig:
+      service:
+        name: k8s-policy-webhook
+        namespace: policy-system
+        path: /validate
+        port: 443
+    rules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+    namespaceSelector:
+      matchExpressions:
+        - key: policy-webhook/exempt
+          operator: DoesNotExist

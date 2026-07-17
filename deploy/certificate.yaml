@@ -1,0 +1,15 @@
+# Requires cert-manager. Issues the TLS cert the API server needs to
+# trust before it will call this webhook over HTTPS.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: k8s-policy-webhook-tls
+  namespace: policy-system
+spec:
+  secretName: k8s-policy-webhook-tls
+  dnsNames:
+    - k8s-policy-webhook.policy-system.svc
+    - k8s-policy-webhook.policy-system.svc.cluster.local
+  issuerRef:
+    name: cluster-issuer
+    kind: ClusterIssuer

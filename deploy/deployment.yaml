@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-policy-webhook
+  namespace: policy-system
+  labels:
+    app: k8s-policy-webhook
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: k8s-policy-webhook
+  template:
+    metadata:
+      labels:
+        app: k8s-policy-webhook
+    spec:
+      containers:
+        - name: webhook
+          image: ghcr.io/jnnishad/k8s-policy-webhook:latest
+          args:
+            - --addr=:8443
+            - --tls-cert=/etc/webhook/tls/tls.crt
+            - --tls-key=/etc/webhook/tls/tls.key
+          ports:
+            - containerPort: 8443
+              name: https
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8443
+              scheme: HTTPS
+          volumeMounts:
+            - name: tls
+              mountPath: /etc/webhook/tls
+              readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: k8s-policy-webhook-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-policy-webhook
+  namespace: policy-system
+spec:
+  selector:
+    app: k8s-policy-webhook
+  ports:
+    - port: 443
+      targetPort: 8443
