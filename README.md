@@ -93,15 +93,3 @@ it's a fast fix, not a redesign.
 <!-- test commit 2026-02-13T08:13:43 -->
 
 <!-- test commit 2026-02-28T13:57:31 -->
-
-<!-- JN -->
-
-<!-- JN -->
-
-<!-- JN -->
-
-<!-- JN -->
-
-<!-- JN -->
-
-<!-- JN -->
